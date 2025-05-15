@@ -72,11 +72,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create a manual session
       if (req.session) {
-        req.session.user = {
-          id: user.id,
-          username: user.username,
-          isAdmin: user.isAdmin,
+        const userSession = {
+          claims: {
+            sub: user.id,
+            username: user.username,
+            isAdmin: user.isAdmin,
+          }
         };
+        (req.session as any).passport = { user: userSession };
       }
       
       res.json({ message: "Muvaffaqiyatli login", user });
