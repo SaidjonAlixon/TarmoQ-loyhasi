@@ -278,13 +278,13 @@ export default function Chat() {
             </div>
             <div className="flex items-center gap-2">
               <Button size="icon" variant="ghost" aria-label="Qo'ng'iroq">
-                <Phone className="h-5 w-5 text-dark-600 dark:text-light-400" />
+                <Phone className="h-5 w-5 text-gray-700" />
               </Button>
               <Button size="icon" variant="ghost" aria-label="Video qo'ng'iroq">
-                <Video className="h-5 w-5 text-dark-600 dark:text-light-400" />
+                <Video className="h-5 w-5 text-gray-700" />
               </Button>
               <Button size="icon" variant="ghost" aria-label="Ma'lumot">
-                <Info className="h-5 w-5 text-dark-600 dark:text-light-400" />
+                <Info className="h-5 w-5 text-gray-700" />
               </Button>
             </div>
           </div>
@@ -295,7 +295,7 @@ export default function Chat() {
               <div key={date}>
                 {/* Date Separator */}
                 <div className="flex justify-center mb-4">
-                  <span className="bg-light-400 dark:bg-dark-600 text-dark-500 dark:text-light-400 text-xs px-3 py-1 rounded-full">
+                  <span className="bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full">
                     {new Date(date).toLocaleDateString('uz-UZ', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </span>
                 </div>

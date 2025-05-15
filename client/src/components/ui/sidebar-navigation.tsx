@@ -41,10 +41,10 @@ export function SidebarNavigation() {
   };
 
   return (
-    <div className="hidden md:flex flex-col w-20 bg-primary dark:bg-dark-700 text-white p-4">
+    <div className="hidden md:flex flex-col w-20 bg-blue-600 text-white p-4">
       <div className="flex flex-col items-center gap-6">
         {/* App Logo */}
-        <div className="h-12 w-12 bg-white dark:bg-primary rounded-full flex items-center justify-center text-primary dark:text-white font-bold text-xl">
+        <div className="h-12 w-12 bg-white rounded-full flex items-center justify-center text-blue-600 font-bold text-xl">
           T
         </div>
         
@@ -154,18 +154,14 @@ export function SidebarNavigation() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-12 w-12 rounded-full hover:bg-white/10"
+                className="h-12 w-12 rounded-full hover:bg-white/10 hidden"
                 onClick={toggleTheme}
               >
-                {isDarkMode ? (
-                  <Sun className="h-6 w-6" />
-                ) : (
-                  <Moon className="h-6 w-6" />
-                )}
+                <Sun className="h-6 w-6" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right">
-              <p>{isDarkMode ? "Yorug' rejim" : "Qora rejim"}</p>
+              <p>Yorug' rejim</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
