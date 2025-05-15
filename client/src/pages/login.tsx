@@ -106,35 +106,39 @@ export default function Login() {
   };
 
   return (
-    <div className="h-screen w-full flex items-center justify-center bg-blue-500 p-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-xl overflow-hidden">
+    <div className="h-screen w-full flex items-center justify-center bg-gradient-to-b from-blue-400 to-blue-600 p-4">
+      <div className="max-w-md w-full bg-white rounded-xl shadow-2xl overflow-hidden">
         <div className="p-6 md:p-8">
           {/* App Logo */}
-          <div className="flex justify-center mb-12">
-            <div className="text-5xl font-bold text-blue-500 font-montserrat">
-              TarmoQ 
-              <span className="text-violet-500 text-xl ml-1">zamonaviy muloqot</span>
+          <div className="flex flex-col items-center justify-center mb-10">
+            <div className="text-6xl font-bold text-blue-500 font-inter tracking-tight mb-2">
+              TarmoQ
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-0.5 w-6 bg-blue-300"></div>
+              <span className="text-blue-600 text-sm font-medium">zamonaviy muloqot</span>
+              <div className="h-0.5 w-6 bg-blue-300"></div>
             </div>
           </div>
 
           {/* Tab Navigation */}
           <div className="flex justify-center mb-8">
-            <div className="flex rounded-lg bg-gray-100 p-1 w-full max-w-xs">
+            <div className="flex rounded-lg bg-blue-50 p-1 w-full">
               <button 
-                className={`auth-tab flex-1 py-2 px-4 rounded-md ${
+                className={`auth-tab flex-1 py-2.5 px-4 rounded-md transition-all duration-200 ${
                   activeTab === "login" 
-                    ? "bg-white shadow-sm text-dark-700" 
-                    : "text-gray-500"
+                    ? "bg-white shadow-md text-blue-600 font-semibold" 
+                    : "text-blue-400 hover:text-blue-500"
                 } font-medium`}
                 onClick={() => setActiveTab("login")}
               >
                 Kirish
               </button>
               <button 
-                className={`auth-tab flex-1 py-2 px-4 rounded-md ${
+                className={`auth-tab flex-1 py-2.5 px-4 rounded-md transition-all duration-200 ${
                   activeTab === "register" 
-                    ? "bg-white shadow-sm text-dark-700" 
-                    : "text-gray-500"
+                    ? "bg-white shadow-md text-blue-600 font-semibold" 
+                    : "text-blue-400 hover:text-blue-500"
                 } font-medium`}
                 onClick={() => setActiveTab("register")}
               >
@@ -184,7 +188,7 @@ export default function Login() {
                 
                 <Button 
                   type="submit" 
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 mt-2"
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2.5 mt-3 rounded-lg font-medium transition-all duration-200 transform hover:translate-y-[-1px] hover:shadow-lg"
                 >
                   Kirish
                 </Button>
@@ -303,7 +307,7 @@ export default function Login() {
                 
                 <Button 
                   type="submit" 
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 mt-2"
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2.5 mt-3 rounded-lg font-medium transition-all duration-200 transform hover:translate-y-[-1px] hover:shadow-lg"
                 >
                   Ro'yhatdan o'tish
                 </Button>

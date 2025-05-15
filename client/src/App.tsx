@@ -15,7 +15,7 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-light-300 dark:bg-dark-800">
+      <div className="h-screen w-full flex items-center justify-center bg-blue-50">
         <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
