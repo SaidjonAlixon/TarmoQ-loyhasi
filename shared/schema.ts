@@ -32,6 +32,7 @@ export const users = pgTable("users", {
   id: varchar("id").primaryKey().notNull(),
   username: varchar("username").unique().notNull(),
   nickname: varchar("nickname").notNull(),
+  password: varchar("password"), // Password field for manual login
   email: varchar("email"),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
@@ -46,10 +47,12 @@ export const users = pgTable("users", {
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   nickname: true,
+  password: true,
   email: true,
   firstName: true,
   lastName: true,
   profileImageUrl: true,
+  isAdmin: true,
 });
 
 // Chats table for both one-on-one and group chats

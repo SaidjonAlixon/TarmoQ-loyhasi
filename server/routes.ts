@@ -27,6 +27,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Foydalanuvchi ma'lumotlarini olishda xatolik" });
     }
   });
+  
+  // User routes
+  app.post('/api/users/register', async (req, res) => {
+    try {
+      const { username, password, nickname, isAdmin } = req.body;
+      
+      // Check if user exists
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(400).json({ message: "Bu foydalanuvchi nomi allaqachon mavjud" });
+      }
+      
+      // Create user (in real app, password should be hashed)
+      const user = await storage.createUser({
+        id: `manual_${Date.now()}`,
+        username,
+        nickname,
+        isAdmin: Boolean(isAdmin),
+        password, // In real app, this would be hashed
+      });
+      
+      res.status(201).json({ message: "Foydalanuvchi muvaffaqiyatli yaratildi", user });
+    } catch (error) {
+      console.error("Error creating user:", error);
+      res.status(500).json({ message: "Foydalanuvchi yaratishda xatolik yuz berdi" });
+    }
+  });
+  
+  app.post('/api/users/login', async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      // Find the user
+      const user = await storage.getUserByUsername(username);
+      if (!user) {
+        return res.status(401).json({ message: "Noto'g'ri foydalanuvchi nomi yoki parol" });
+      }
+      
+      // Check password (in real app, you'd compare hashed passwords)
+      if (user.password !== password) {
+        return res.status(401).json({ message: "Noto'g'ri foydalanuvchi nomi yoki parol" });
+      }
+      
+      // Create a manual session
+      if (req.session) {
+        req.session.user = {
+          id: user.id,
+          username: user.username,
+          isAdmin: user.isAdmin,
+        };
+      }
+      
+      res.json({ message: "Muvaffaqiyatli login", user });
+    } catch (error) {
+      console.error("Error logging in:", error);
+      res.status(500).json({ message: "Login qilishda xatolik yuz berdi" });
+    }
+  });
 
   // User routes
   app.get('/api/users/search', isAuthenticated, async (req: any, res) => {

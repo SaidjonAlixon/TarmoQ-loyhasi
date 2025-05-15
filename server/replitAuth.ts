@@ -57,8 +57,30 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
+  // Generate a username based on email or a random string if no email
+  const email = claims["email"] || "";
+  let username = "";
+  let nickname = "";
+  
+  if (email) {
+    // Use part before @ as username
+    username = email.split('@')[0];
+  } else {
+    // Generate a random username
+    username = `user_${Math.floor(Math.random() * 10000)}`;
+  }
+  
+  // Set nickname based on first name and last name or username
+  if (claims["first_name"] || claims["last_name"]) {
+    nickname = [claims["first_name"], claims["last_name"]].filter(Boolean).join(' ');
+  } else {
+    nickname = username;
+  }
+  
   await storage.upsertUser({
     id: claims["sub"],
+    username,
+    nickname,
     email: claims["email"],
     firstName: claims["first_name"],
     lastName: claims["last_name"],
