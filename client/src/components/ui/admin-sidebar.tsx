@@ -26,7 +26,7 @@ export function AdminSidebar() {
   }
 
   return (
-    <div className="lg:col-span-1 bg-primary-dark dark:bg-dark-900 text-white p-4 flex flex-col">
+    <div className="lg:col-span-1 bg-blue-700 text-white p-4 flex flex-col">
       <div className="mb-6">
         <h1 className="text-xl font-bold font-montserrat">TarmoQ Admin</h1>
         <p className="text-primary-light text-sm">Boshqaruv paneli</p>

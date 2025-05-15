@@ -287,23 +287,7 @@ export default function Login() {
                   )}
                 />
                 
-                <FormField
-                  control={registerForm.control}
-                  name="isAdmin"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center gap-2 space-y-0">
-                      <FormControl>
-                        <Input 
-                          type="checkbox" 
-                          checked={field.value}
-                          onChange={e => field.onChange(e.target.checked)}
-                          className="h-4 w-4" 
-                        />
-                      </FormControl>
-                      <FormLabel className="text-sm font-normal">Admin huquqlarini berish</FormLabel>
-                    </FormItem>
-                  )}
-                />
+                {/* Admin huquqlari faqat oldindan belgilangan loginlar uchun */}
                 
                 <Button 
                   type="submit" 

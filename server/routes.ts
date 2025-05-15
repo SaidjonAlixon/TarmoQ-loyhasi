@@ -47,10 +47,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Admin credentials
+  const ADMIN_USERNAME = "admin";
+  const ADMIN_PASSWORD = "admin123";
+  
   // User routes
   app.post('/api/users/register', async (req, res) => {
     try {
-      const { username, password, nickname, isAdmin } = req.body;
+      const { username, password, nickname } = req.body;
       
       // Check if user exists
       const existingUser = await storage.getUserByUsername(username);
@@ -58,12 +62,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Bu foydalanuvchi nomi allaqachon mavjud" });
       }
       
+      // Determine if this is the admin account
+      const isAdmin = username === ADMIN_USERNAME && password === ADMIN_PASSWORD;
+      
       // Create user (in real app, password should be hashed)
       const user = await storage.createUser({
         id: `manual_${Date.now()}`,
         username,
         nickname,
-        isAdmin: Boolean(isAdmin),
+        isAdmin,
         password, // In real app, this would be hashed
       });
       
