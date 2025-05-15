@@ -46,9 +46,8 @@ function App() {
           
           <Route path="/admin">
             {() => {
-              // We'll check if there's a user and use a safe type check for isAdmin
-              // In a real app, you'd verify this from the server response
-              const isAdmin = user && ('isAdmin' in user) && (user as any).isAdmin;
+              // Safely check admin status
+              const isAdmin = user && typeof user === 'object' && 'isAdmin' in (user as Record<string, any>) && (user as any).isAdmin;
               if (isAdmin) {
                 return (
                   <AdminLayout>
