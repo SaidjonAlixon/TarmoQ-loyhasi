@@ -21,25 +21,25 @@ export default function Login() {
   };
 
   return (
-    <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-primary to-secondary dark:from-dark-800 dark:to-dark-700 p-4">
-      <div className="max-w-md w-full bg-white dark:bg-dark-700 rounded-xl shadow-xl overflow-hidden">
+    <div className="h-screen w-full flex items-center justify-center bg-blue-500 p-4">
+      <div className="max-w-md w-full bg-white rounded-xl shadow-xl overflow-hidden">
         <div className="p-6 md:p-8">
           {/* App Logo */}
-          <div className="flex justify-center mb-8">
-            <div className="text-4xl font-bold text-primary dark:text-primary-light font-montserrat">
-              TarmoQ
-              <span className="text-secondary text-lg ml-2">zamonaviy muloqot</span>
+          <div className="flex justify-center mb-12">
+            <div className="text-5xl font-bold text-blue-500 font-montserrat">
+              TarmoQ 
+              <span className="text-violet-500 text-xl ml-1">zamonaviy muloqot</span>
             </div>
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex justify-center mb-6">
-            <div className="flex rounded-lg bg-light-300 dark:bg-dark-600 p-1 w-full max-w-xs">
+          <div className="flex justify-center mb-8">
+            <div className="flex rounded-lg bg-gray-100 p-1 w-full max-w-xs">
               <button 
                 className={`auth-tab flex-1 py-2 px-4 rounded-md ${
                   activeTab === "login" 
-                    ? "bg-white dark:bg-dark-500 shadow-sm text-dark-700 dark:text-light-200" 
-                    : "text-dark-500 dark:text-light-400"
+                    ? "bg-white shadow-sm text-dark-700" 
+                    : "text-gray-500"
                 } font-medium`}
                 onClick={() => setActiveTab("login")}
               >
@@ -48,8 +48,8 @@ export default function Login() {
               <button 
                 className={`auth-tab flex-1 py-2 px-4 rounded-md ${
                   activeTab === "register" 
-                    ? "bg-white dark:bg-dark-500 shadow-sm text-dark-700 dark:text-light-200" 
-                    : "text-dark-500 dark:text-light-400"
+                    ? "bg-white shadow-sm text-dark-700" 
+                    : "text-gray-500"
                 } font-medium`}
                 onClick={() => setActiveTab("register")}
               >
@@ -60,9 +60,9 @@ export default function Login() {
 
           {/* Login Tab Content */}
           <div className={activeTab === "login" ? "" : "hidden"}>
-            <div className="text-center mb-4">
-              <h2 className="text-xl font-bold text-dark-800 dark:text-light-100">Tizimga kirish</h2>
-              <p className="text-dark-500 dark:text-light-400 mt-1 text-sm">
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-bold text-gray-800">Tizimga kirish</h2>
+              <p className="text-gray-500 mt-1 text-sm">
                 TarmoQ xizmatidan foydalanish uchun tizimga kiring
               </p>
             </div>
@@ -70,7 +70,7 @@ export default function Login() {
             {/* Auth Button */}
             <Button 
               variant="default" 
-              className="w-full flex items-center justify-center gap-2 mb-4 py-5 bg-primary hover:bg-primary-dark text-white"
+              className="w-full flex items-center justify-center gap-2 mb-4 py-5 bg-blue-500 hover:bg-blue-600 text-white"
               onClick={handleLogin}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24">
@@ -85,9 +85,9 @@ export default function Login() {
 
           {/* Register Tab Content */}
           <div className={activeTab === "register" ? "" : "hidden"}>
-            <div className="text-center mb-4">
-              <h2 className="text-xl font-bold text-dark-800 dark:text-light-100">Ro'yhatdan o'tish</h2>
-              <p className="text-dark-500 dark:text-light-400 mt-1 text-sm">
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-bold text-gray-800">Ro'yhatdan o'tish</h2>
+              <p className="text-gray-500 mt-1 text-sm">
                 TarmoQ xizmatidan foydalanish uchun ro'yhatdan o'ting
               </p>
             </div>
@@ -95,7 +95,7 @@ export default function Login() {
             {/* Auth Button */}
             <Button 
               variant="default" 
-              className="w-full flex items-center justify-center gap-2 mb-4 py-5 bg-primary hover:bg-primary-dark text-white"
+              className="w-full flex items-center justify-center gap-2 mb-4 py-5 bg-blue-500 hover:bg-blue-600 text-white"
               onClick={handleLogin}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24">
@@ -108,7 +108,7 @@ export default function Login() {
             </Button>
           </div>
           
-          <div className="text-dark-500 dark:text-light-400 mt-6 text-center text-sm">
+          <div className="text-gray-500 mt-8 text-center text-sm">
             Tizimga kirib, siz foydalanuvchi shartlariga va xavfsizlik siyosatiga rozilik bildirasiz.
           </div>
         </div>
