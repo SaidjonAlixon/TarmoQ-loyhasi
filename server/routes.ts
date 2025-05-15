@@ -17,10 +17,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setupWebsocket(wss, storage);
 
   // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  app.get('/api/auth/user', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      // Handle both Replit auth and manual login
+      let userId;
+      if (req.user.claims?.sub) {
+        // Replit auth
+        userId = req.user.claims.sub;
+      } else if (req.session?.passport?.user?.claims?.sub) {
+        // Manual login
+        userId = req.session.passport.user.claims.sub;
+      } else {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
       const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
+      }
+      
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
