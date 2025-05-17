@@ -85,7 +85,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { username, password } = req.body;
       
-      // Find the user
+      // Special case for admin
+      if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        // Check if admin already exists
+        let adminUser = await storage.getUserByUsername(username);
+        
+        // If admin doesn't exist yet, create admin account
+        if (!adminUser) {
+          adminUser = await storage.createUser({
+            id: `admin_${Date.now()}`,
+            username: ADMIN_USERNAME,
+            nickname: "Administrator",
+            password: ADMIN_PASSWORD,
+            isAdmin: true
+          });
+        } else if (!adminUser.isAdmin) {
+          // Update user to admin if account exists but is not admin
+          adminUser.isAdmin = true;
+          await storage.upsertUser(adminUser);
+        }
+        
+        // Create session for admin
+        if (req.session) {
+          const userSession = {
+            claims: {
+              sub: adminUser.id,
+              username: adminUser.username,
+              isAdmin: true,
+            }
+          };
+          (req.session as any).passport = { user: userSession };
+        }
+        
+        return res.json({ message: "Admin muvaffaqiyatli login", user: adminUser });
+      }
+      
+      // Regular user login
       const user = await storage.getUserByUsername(username);
       if (!user) {
         return res.status(401).json({ message: "Noto'g'ri foydalanuvchi nomi yoki parol" });
