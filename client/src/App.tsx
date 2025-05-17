@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { MainLayout } from "@/layouts/main-layout";
 import { AdminLayout } from "@/layouts/admin-layout";
 import { UserTable } from "@/components/ui/user-table";
+import { useQuery } from "@tanstack/react-query";
 
 function App() {
   const { user, isLoading } = useAuth();
@@ -67,12 +68,16 @@ function App() {
             {() => {
               const isAdmin = user && typeof user === 'object' && 'isAdmin' in (user as Record<string, any>) && (user as any).isAdmin;
               if (isAdmin) {
-                return (
+                const { data: allUsers = [], isLoading: isLoadingUsers } = useQuery({
+                queryKey: ["/api/admin/users"],
+              });
+              
+              return (
                   <AdminLayout>
                     <div className="lg:col-span-3 xl:col-span-4 bg-white p-6">
                       <h1 className="text-2xl font-bold text-gray-800 mb-6">Foydalanuvchilar boshqaruvi</h1>
                       <p className="text-gray-600 mb-4">Bu yerda barcha foydalanuvchilar ro'yxati va ularni boshqarish imkoniyatlari mavjud.</p>
-                      <UserTable users={user.allUsers || []} isLoading={false} />
+                      <UserTable users={allUsers} isLoading={isLoadingUsers} />
                     </div>
                   </AdminLayout>
                 );

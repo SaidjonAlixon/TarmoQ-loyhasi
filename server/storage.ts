@@ -110,7 +110,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllUsers(): Promise<User[]> {
-    return db.select().from(users).orderBy(desc(users.createdAt));
+    // Get all users with more detailed information for admin panel
+    const allUsers = await db.select()
+    .from(users)
+    .orderBy(desc(users.createdAt));
+    
+    return allUsers;
   }
 
   async getActiveUsersCount(): Promise<number> {
