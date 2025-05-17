@@ -9,6 +9,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { apiRequest } from "@/lib/queryClient";
+import { useQueryClient } from "@tanstack/react-query";
 
 // Form validation schemas
 const loginSchema = z.object({
@@ -31,6 +32,7 @@ export default function Login() {
   const [, navigate] = useLocation();
   const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   
   // Redirect to chat if already authenticated
@@ -68,12 +70,28 @@ export default function Login() {
   // Login handler
   const onLogin = async (values: z.infer<typeof loginSchema>) => {
     try {
-      await apiRequest("POST", "/api/users/login", values);
+      const response = await apiRequest("POST", "/api/users/login", values);
+      const data = await response.json();
+      
       toast({
         title: "Muvaffaqiyatli",
         description: "Siz tizimga kirdingiz",
       });
-      navigate("/chat");
+      
+      // Force a refresh of auth state
+      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      
+      // If admin, navigate to admin dashboard, otherwise to chat
+      if (data.user && data.user.isAdmin) {
+        navigate("/admin");
+      } else {
+        navigate("/chat");
+      }
+      
+      // Force location reload to ensure everything is refreshed
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } catch (error) {
       toast({
         title: "Xatolik",
