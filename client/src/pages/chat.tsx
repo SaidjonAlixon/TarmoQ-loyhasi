@@ -19,6 +19,8 @@ export default function Chat() {
   const { user } = useAuth();
   const [selectedChat, setSelectedChat] = useState<ChatWithLastMessage | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchUserQuery, setSearchUserQuery] = useState("");
+  const [showUserSearch, setShowUserSearch] = useState(false);
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { lastMessage, sendMessage } = useWebSocket();
@@ -27,6 +29,12 @@ export default function Chat() {
   const { data: chats = [] } = useQuery({
     queryKey: ["/api/chats"],
     refetchInterval: 30000, // Refetch every 30 seconds
+  });
+  
+  // Query for user search
+  const { data: searchResults = [], isLoading: isSearching } = useQuery({
+    queryKey: ["/api/users/search", searchUserQuery],
+    enabled: !!searchUserQuery && searchUserQuery.length >= 2 && showUserSearch,
   });
 
   // Query for messages in selected chat
@@ -216,7 +224,12 @@ export default function Chat() {
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-xl font-bold font-montserrat">TarmoQ</h1>
             <div className="flex gap-2">
-              <Button size="icon" variant="ghost" aria-label="Yangi chat">
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                aria-label="Yangi chat"
+                onClick={() => setShowUserSearch(!showUserSearch)}
+              >
                 <Edit className="h-5 w-5" />
               </Button>
             </div>
@@ -231,6 +244,80 @@ export default function Chat() {
             />
             <Search className="absolute left-3 top-2.5 h-5 w-5 text-dark-400 dark:text-light-500" />
           </div>
+          
+          {/* User search interface */}
+          {showUserSearch && (
+            <div className="mt-3 space-y-3 bg-light-200 dark:bg-dark-800 rounded-lg p-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-dark-700 dark:text-light-200">Foydalanuvchini topish</h3>
+                <Button 
+                  size="sm" 
+                  variant="ghost"
+                  onClick={() => {
+                    setShowUserSearch(false);
+                    setSearchUserQuery('');
+                  }}
+                >
+                  Bekor qilish
+                </Button>
+              </div>
+              <Input
+                placeholder="Taxallus yoki ism bo'yicha qidirish"
+                value={searchUserQuery}
+                onChange={(e) => setSearchUserQuery(e.target.value)}
+                className="w-full"
+              />
+              
+              {/* Search results */}
+              <div className="max-h-64 overflow-y-auto space-y-2">
+                {isSearching ? (
+                  <div className="text-center py-2 text-dark-500 dark:text-light-400">Qidirilmoqda...</div>
+                ) : searchResults.length > 0 ? (
+                  searchResults.map((foundUser: any) => (
+                    <div 
+                      key={foundUser.id}
+                      className="flex items-center gap-3 p-2 hover:bg-light-300 dark:hover:bg-dark-700 rounded-md cursor-pointer"
+                      onClick={async () => {
+                        // Create a new chat with this user
+                        try {
+                          const newChat = await apiRequest('/api/chats', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                              name: `Chat with ${foundUser.nickname || foundUser.username}`,
+                              isGroup: false,
+                              participants: [foundUser.id]
+                            })
+                          });
+                          
+                          // Reset search and refresh chats
+                          setSearchUserQuery('');
+                          setShowUserSearch(false);
+                          queryClient.invalidateQueries({queryKey: ['/api/chats']});
+                          
+                          // Select the new chat
+                          setSelectedChat(newChat);
+                        } catch (error) {
+                          console.error('Error creating chat:', error);
+                        }
+                      }}
+                    >
+                      <div className="h-10 w-10 bg-primary text-white flex items-center justify-center rounded-full">
+                        {foundUser.nickname?.[0] || foundUser.username?.[0] || 'U'}
+                      </div>
+                      <div>
+                        <div className="font-medium text-dark-700 dark:text-light-200">{foundUser.nickname || foundUser.username}</div>
+                        <div className="text-xs text-dark-500 dark:text-light-400">@{foundUser.username}</div>
+                      </div>
+                    </div>
+                  ))
+                ) : searchUserQuery.length >= 2 ? (
+                  <div className="text-center py-2 text-dark-500 dark:text-light-400">Foydalanuvchi topilmadi</div>
+                ) : (
+                  <div className="text-center py-2 text-dark-500 dark:text-light-400">Kamida 2 ta harf kiriting</div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
         
         {/* Chat List */}
