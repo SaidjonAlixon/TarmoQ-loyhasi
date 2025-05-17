@@ -142,8 +142,9 @@ export default function Chat() {
       handleTyping(false);
       
       // Send message via API
-      const newMessage = await apiRequest(`/api/chats/${selectedChat.id}/messages`, {
+      const newMessage = await apiRequest({
         method: 'POST',
+        url: `/api/chats/${selectedChat.id}/messages`,
         body: JSON.stringify({ content })
       });
       
@@ -173,8 +174,9 @@ export default function Chat() {
   const createNewChatWithUser = async (foundUser: any) => {
     try {
       // Create a new chat with this user
-      const newChat = await apiRequest('/api/chats', {
+      const newChat = await apiRequest({
         method: 'POST',
+        url: '/api/chats',
         body: JSON.stringify({
           name: `Chat with ${foundUser.nickname || foundUser.username}`,
           isGroup: false,
@@ -220,7 +222,10 @@ export default function Chat() {
       // Mark all messages as read
       messages.forEach(message => {
         if (message.senderId !== user?.id && !message.isRead) {
-          apiRequest('POST', `/api/messages/${message.id}/read`, {});
+          apiRequest({
+            method: 'POST',
+            url: `/api/messages/${message.id}/read`
+          });
         }
       });
     }
