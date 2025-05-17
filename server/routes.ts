@@ -151,15 +151,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User routes
-  app.get('/api/users/search', isAuthenticated, async (req: any, res) => {
+  app.get('/api/users/search', async (req: any, res) => {
     try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
       const query = req.query.q as string;
       if (!query || query.length < 2) {
         return res.json([]);
       }
       
-      const userId = req.user.claims.sub;
+      // Get user ID from session (works with both auth methods)
+      let userId;
+      if (req.user.claims?.sub) {
+        userId = req.user.claims.sub;
+      } else if (req.session?.passport?.user?.claims?.sub) {
+        userId = req.session.passport.user.claims.sub;
+      } else {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      console.log("Searching users with query:", query, "for user:", userId);
       const users = await storage.searchUsers(query, userId);
+      console.log("Search results:", users.length, "users found");
       res.json(users);
     } catch (error) {
       console.error("Error searching users:", error);
@@ -313,19 +328,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin routes
-  app.get('/api/admin/stats', isAuthenticated, async (req: any, res) => {
+  app.get('/api/admin/stats', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      // Handle both Replit auth and manual login
+      let userId;
+      if (req.user.claims?.sub) {
+        // Replit auth
+        userId = req.user.claims.sub;
+      } else if (req.session?.passport?.user?.claims?.sub) {
+        // Manual login
+        userId = req.session.passport.user.claims.sub;
+      } else {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
       const user = await storage.getUser(userId);
       
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Bu amaliyot faqat adminlar uchun" });
       }
       
+      console.log("Admin stats requested by user:", userId);
+      
       const allUsers = await storage.getAllUsers();
       const activeUsersCount = await storage.getActiveUsersCount();
       const groupsCount = await storage.getGroupsCount();
       const messagesToday = await storage.getTotalMessagesToday();
+      
+      console.log("Admin stats:", {
+        totalUsers: allUsers.length,
+        activeUsers: activeUsersCount,
+        groups: groupsCount,
+        messagesToday
+      });
       
       res.json({
         totalUsers: allUsers.length,
@@ -340,16 +379,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/admin/users', isAuthenticated, async (req: any, res) => {
+  app.get('/api/admin/users', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      // Handle both Replit auth and manual login
+      let userId;
+      if (req.user.claims?.sub) {
+        // Replit auth
+        userId = req.user.claims.sub;
+      } else if (req.session?.passport?.user?.claims?.sub) {
+        // Manual login
+        userId = req.session.passport.user.claims.sub;
+      } else {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
       const user = await storage.getUser(userId);
       
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Bu amaliyot faqat adminlar uchun" });
       }
       
+      console.log("Admin users list requested by user:", userId);
+      
       const users = await storage.getAllUsers();
+      console.log(`Retrieved ${users.length} users for admin panel`);
+      
       res.json(users);
     } catch (error) {
       console.error("Error fetching users for admin:", error);
