@@ -45,35 +45,50 @@ export function AdminSidebar() {
         </Button>
         <Button
           variant="ghost"
-          className="w-full flex items-center gap-3 px-3 py-3 justify-start hover:bg-white/10 rounded-lg"
+          className={`w-full flex items-center gap-3 px-3 py-3 justify-start ${
+            location === '/admin/users' ? 'bg-white/10' : 'hover:bg-white/10'
+          } rounded-lg`}
+          onClick={() => navigate('/admin/users')}
         >
           <Users className="h-5 w-5" />
           <span>Foydalanuvchilar</span>
         </Button>
         <Button
           variant="ghost"
-          className="w-full flex items-center gap-3 px-3 py-3 justify-start hover:bg-white/10 rounded-lg"
+          className={`w-full flex items-center gap-3 px-3 py-3 justify-start ${
+            location === '/admin/groups' ? 'bg-white/10' : 'hover:bg-white/10'
+          } rounded-lg`}
+          onClick={() => navigate('/admin/groups')}
         >
           <UsersRound className="h-5 w-5" />
           <span>Guruhlar</span>
         </Button>
         <Button
           variant="ghost"
-          className="w-full flex items-center gap-3 px-3 py-3 justify-start hover:bg-white/10 rounded-lg"
+          className={`w-full flex items-center gap-3 px-3 py-3 justify-start ${
+            location === '/admin/messages' ? 'bg-white/10' : 'hover:bg-white/10'
+          } rounded-lg`}
+          onClick={() => navigate('/admin/messages')}
         >
           <MessageSquare className="h-5 w-5" />
           <span>Xabarlar</span>
         </Button>
         <Button
           variant="ghost"
-          className="w-full flex items-center gap-3 px-3 py-3 justify-start hover:bg-white/10 rounded-lg"
+          className={`w-full flex items-center gap-3 px-3 py-3 justify-start ${
+            location === '/admin/reports' ? 'bg-white/10' : 'hover:bg-white/10'
+          } rounded-lg`}
+          onClick={() => navigate('/admin/reports')}
         >
           <AlertTriangle className="h-5 w-5" />
           <span>Shikoyatlar</span>
         </Button>
         <Button
           variant="ghost"
-          className="w-full flex items-center gap-3 px-3 py-3 justify-start hover:bg-white/10 rounded-lg"
+          className={`w-full flex items-center gap-3 px-3 py-3 justify-start ${
+            location === '/admin/settings' ? 'bg-white/10' : 'hover:bg-white/10'
+          } rounded-lg`}
+          onClick={() => navigate('/admin/settings')}
         >
           <Settings className="h-5 w-5" />
           <span>Sozlamalar</span>
