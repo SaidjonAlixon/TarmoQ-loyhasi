@@ -62,7 +62,10 @@ export default function Chat() {
           );
           
           // Mark as read
-          apiRequest('POST', `/api/messages/${newMessage.id}/read`, {});
+          apiRequest({
+            method: 'POST',
+            url: `/api/messages/${newMessage.id}/read`
+          });
         }
         
         // Update chat list with new message

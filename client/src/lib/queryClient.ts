@@ -46,10 +46,18 @@ export async function apiRequest(
 
   await throwIfResNotOk(res);
   
-  try {
-    const json = await res.json();
-    return json;
-  } catch (e) {
+  // JSON formatida qaytarilgan ma'lumotlarni tekshirish
+  const contentType = res.headers.get('content-type');
+  if (contentType && contentType.includes('application/json')) {
+    try {
+      const json = await res.json();
+      return json;
+    } catch (e) {
+      console.error('JSON parsing error:', e);
+      return res;
+    }
+  } else {
+    // JSON formati emas, to'g'ridan-to'g'ri qaytaramiz
     return res;
   }
 }

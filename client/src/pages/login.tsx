@@ -70,8 +70,11 @@ export default function Login() {
   // Login handler
   const onLogin = async (values: z.infer<typeof loginSchema>) => {
     try {
-      const response = await apiRequest("POST", "/api/users/login", values);
-      const data = await response.json();
+      const data = await apiRequest({
+        method: "POST",
+        url: "/api/users/login",
+        body: JSON.stringify(values)
+      });
       
       toast({
         title: "Muvaffaqiyatli",
@@ -106,7 +109,12 @@ export default function Login() {
     try {
       const { confirmPassword, ...registerData } = values;
       
-      await apiRequest("POST", "/api/users/register", registerData);
+      await apiRequest({
+        method: "POST",
+        url: "/api/users/register",
+        body: JSON.stringify(registerData)
+      });
+      
       toast({
         title: "Muvaffaqiyatli",
         description: "Siz ro'yhatdan o'tdingiz, endi tizimga kirishingiz mumkin",
