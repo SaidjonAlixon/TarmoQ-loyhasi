@@ -139,8 +139,10 @@ export default function Chat() {
       handleTyping(false);
       
       // Send message via API
-      const response = await apiRequest('POST', `/api/chats/${selectedChat.id}/messages`, { content });
-      const newMessage = await response.json();
+      const newMessage = await apiRequest(`/api/chats/${selectedChat.id}/messages`, {
+        method: 'POST',
+        body: JSON.stringify({ content })
+      });
       
       // Add message to local state
       queryClient.setQueryData(
@@ -161,6 +163,31 @@ export default function Chat() {
     } catch (error) {
       console.error('Error sending message:', error);
       return false;
+    }
+  };
+  
+  // Create a new chat with a user
+  const createNewChatWithUser = async (foundUser: any) => {
+    try {
+      // Create a new chat with this user
+      const newChat = await apiRequest('/api/chats', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: `Chat with ${foundUser.nickname || foundUser.username}`,
+          isGroup: false,
+          participants: [foundUser.id]
+        })
+      });
+      
+      // Reset search and refresh chats
+      setSearchUserQuery('');
+      setShowUserSearch(false);
+      queryClient.invalidateQueries({queryKey: ['/api/chats']});
+      
+      // Select the new chat
+      setSelectedChat(newChat);
+    } catch (error) {
+      console.error('Error creating chat:', error);
     }
   };
 
@@ -277,29 +304,7 @@ export default function Chat() {
                     <div 
                       key={foundUser.id}
                       className="flex items-center gap-3 p-2 hover:bg-light-300 dark:hover:bg-dark-700 rounded-md cursor-pointer"
-                      onClick={async () => {
-                        // Create a new chat with this user
-                        try {
-                          const newChat = await apiRequest('/api/chats', {
-                            method: 'POST',
-                            body: JSON.stringify({
-                              name: `Chat with ${foundUser.nickname || foundUser.username}`,
-                              isGroup: false,
-                              participants: [foundUser.id]
-                            })
-                          });
-                          
-                          // Reset search and refresh chats
-                          setSearchUserQuery('');
-                          setShowUserSearch(false);
-                          queryClient.invalidateQueries({queryKey: ['/api/chats']});
-                          
-                          // Select the new chat
-                          setSelectedChat(newChat);
-                        } catch (error) {
-                          console.error('Error creating chat:', error);
-                        }
-                      }}
+                      onClick={() => createNewChatWithUser(foundUser)}
                     >
                       <div className="h-10 w-10 bg-primary text-white flex items-center justify-center rounded-full">
                         {foundUser.nickname?.[0] || foundUser.username?.[0] || 'U'}
