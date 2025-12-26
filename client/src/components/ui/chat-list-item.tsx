@@ -27,7 +27,6 @@ export function ChatListItem({
     } else if (isYesterday(date)) {
       return "Kecha";
     } else if (isThisWeek(date)) {
-      // Get day name in Uzbek
       const dayNames = ["Yak", "Dush", "Sesh", "Chor", "Pay", "Jum", "Shan"];
       return dayNames[date.getDay()];
     } else {
@@ -48,21 +47,20 @@ export function ChatListItem({
     return message.content;
   };
 
-  // Check if message time is available
   const messageTime = chat.lastMessage 
     ? formatMessageTime(new Date(chat.lastMessage.createdAt)) 
     : formatMessageTime(new Date(chat.createdAt));
 
   return (
     <div 
-      className={`p-3 flex items-center gap-3 cursor-pointer ${
+      className={`px-4 py-3 flex items-center gap-3 cursor-pointer transition-colors ${
         isActive 
-          ? 'bg-light-300 dark:bg-dark-600' 
-          : 'hover:bg-light-300 dark:hover:bg-dark-600'
+          ? 'bg-[#242f3d]' 
+          : 'hover:bg-[#1e2832]'
       }`}
       onClick={onClick}
     >
-      <div className="relative">
+      <div className="relative flex-shrink-0">
         <AvatarWithStatus 
           src={displayInfo.avatar}
           name={displayInfo.name}
@@ -71,17 +69,19 @@ export function ChatListItem({
         />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-center">
-          <h3 className="font-medium text-dark-800 dark:text-light-100 truncate">
+        <div className="flex justify-between items-center mb-1">
+          <h3 className="font-medium text-white truncate text-sm">
             {displayInfo.name}
-            {chat.isGroup && <span className="text-dark-400 dark:text-light-500 ml-1">· {chat.participants.length} a'zo</span>}
+            {chat.isGroup && <span className="text-[#6e7a8a] ml-1 font-normal">· {chat.participants.length} a'zo</span>}
           </h3>
-          <span className={`text-xs ${chat.unreadCount > 0 ? 'text-primary font-medium' : 'text-dark-400 dark:text-light-500'}`}>
+          <span className={`text-xs flex-shrink-0 ml-2 ${
+            chat.unreadCount > 0 ? 'text-[#5288c1] font-medium' : 'text-[#6e7a8a]'
+          }`}>
             {messageTime}
           </span>
         </div>
-        <div className="flex justify-between items-center">
-          <p className="text-dark-500 dark:text-light-500 text-sm truncate">
+        <div className="flex justify-between items-center gap-2">
+          <p className="text-[#6e7a8a] text-sm truncate">
             {chat.lastMessage 
               ? formatLastMessage(chat.lastMessage, chat.lastMessage.senderId)
               : chat.isGroup 
@@ -89,8 +89,8 @@ export function ChatListItem({
                 : "Yangi chat yaratildi"}
           </p>
           {chat.unreadCount > 0 && (
-            <span className="bg-primary text-white text-xs rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
-              {chat.unreadCount}
+            <span className="bg-[#5288c1] text-white text-xs rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center flex-shrink-0 font-medium">
+              {chat.unreadCount > 99 ? '99+' : chat.unreadCount}
             </span>
           )}
         </div>

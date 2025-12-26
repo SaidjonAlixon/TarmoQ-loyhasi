@@ -20,8 +20,11 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   if (isLoading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-blue-50">
-        <div className="animate-spin h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+      <div className="h-screen w-full flex items-center justify-center bg-[#0e1621]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin h-12 w-12 border-4 border-[#5288c1] border-t-transparent rounded-full"></div>
+          <p className="text-[#6e7a8a] text-sm">Yuklanmoqda...</p>
+        </div>
       </div>
     );
   }
@@ -29,9 +32,11 @@ export function MainLayout({ children }: MainLayoutProps) {
   if (!user) return null;
 
   return (
-    <div className="h-screen flex flex-col md:flex-row">
+    <div className="h-screen flex bg-[#0e1621]">
       <SidebarNavigation />
-      {children}
+      <div className="flex-1 min-w-0">
+        {children}
+      </div>
     </div>
   );
 }

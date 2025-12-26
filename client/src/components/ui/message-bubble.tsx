@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { AvatarWithStatus } from "./avatar-with-status";
 import { MessageWithSender } from "@shared/schema";
-import { Check } from "lucide-react";
+import { Check, CheckCheck } from "lucide-react";
 
 interface MessageBubbleProps {
   message: MessageWithSender;
@@ -13,9 +13,9 @@ export function MessageBubble({ message, isOutgoing, showAvatar }: MessageBubble
   const formattedTime = format(new Date(message.createdAt), "HH:mm");
   
   return (
-    <div className={`flex mb-4 message-appear ${isOutgoing ? 'justify-end' : ''}`}>
+    <div className={`flex mb-2 message-appear ${isOutgoing ? 'justify-end' : 'justify-start'}`}>
       {!isOutgoing && showAvatar ? (
-        <div className="flex-shrink-0 mr-3">
+        <div className="flex-shrink-0 mr-2">
           <AvatarWithStatus
             src={message.sender.profileImageUrl || null}
             name={message.sender.nickname || message.sender.username}
@@ -23,28 +23,32 @@ export function MessageBubble({ message, isOutgoing, showAvatar }: MessageBubble
           />
         </div>
       ) : !isOutgoing ? (
-        <div className="w-11 mr-3"></div> // Spacing placeholder when avatar is not shown
+        <div className="w-10 mr-2"></div>
       ) : null}
       
-      <div className="max-w-[70%]">
+      <div className={`max-w-[65%] ${isOutgoing ? 'flex flex-col items-end' : 'flex flex-col items-start'}`}>
+        {!isOutgoing && showAvatar && (
+          <span className="text-xs text-[#6e7a8a] mb-1 px-1">
+            {message.sender.nickname || message.sender.username}
+          </span>
+        )}
         <div className={`${
           isOutgoing 
-            ? 'message-out bg-primary text-white' 
-            : 'message-in bg-white dark:bg-dark-700 shadow-sm dark:shadow-message text-dark-800 dark:text-light-200'
-        } p-3 rounded-lg`}>
-          <p>{message.content}</p>
+            ? 'bg-[#5288c1] text-white rounded-2xl rounded-tr-sm' 
+            : 'bg-[#242f3d] text-white rounded-2xl rounded-tl-sm'
+        } px-4 py-2 shadow-sm`}>
+          <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
         </div>
-        <div className={`flex mt-1 items-center gap-1 ${isOutgoing ? 'justify-end' : ''}`}>
-          <span className="text-xs text-dark-400 dark:text-light-500">{formattedTime}</span>
+        <div className={`flex mt-1 items-center gap-1.5 px-1 ${isOutgoing ? 'flex-row-reverse' : ''}`}>
+          <span className="text-xs text-[#6e7a8a]">{formattedTime}</span>
           {isOutgoing && (
-            message.isRead 
-              ? <span className="text-xs text-primary">
-                  <Check className="h-3 w-3 inline" />
-                  <Check className="h-3 w-3 inline -ml-1" />
-                </span>
-              : <span className="text-xs text-primary">
-                  <Check className="h-3 w-3 inline" />
-                </span>
+            <span className="text-[#5288c1]">
+              {message.isRead ? (
+                <CheckCheck className="h-3.5 w-3.5" />
+              ) : (
+                <Check className="h-3.5 w-3.5" />
+              )}
+            </span>
           )}
         </div>
       </div>

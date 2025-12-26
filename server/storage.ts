@@ -15,7 +15,7 @@ import {
   type MessageWithSender
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, isNotNull, count, asc, or, isNull, sql, inArray } from "drizzle-orm";
+import { eq, and, desc, isNotNull, count, asc, or, isNull, sql, inArray, like, ilike } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -83,19 +83,37 @@ export class DatabaseStorage implements IStorage {
   }
 
   async searchUsers(query: string, currentUserId: string): Promise<User[]> {
-    return db
-      .select()
-      .from(users)
-      .where(
-        and(
-          or(
-            sql`${users.username} ILIKE ${`%${query}%`}`,
-            sql`${users.nickname} ILIKE ${`%${query}%`}`
-          ),
-          sql`${users.id} != ${currentUserId}`
+    try {
+      const searchPattern = `%${query}%`;
+      
+      // First, let's get all users to debug
+      const allUsers = await db.select().from(users);
+      console.log(`Total users in database: ${allUsers.length}`);
+      console.log(`Users:`, allUsers.map(u => ({ id: u.id, username: u.username, nickname: u.nickname })));
+      
+      const results = await db
+        .select()
+        .from(users)
+        .where(
+          and(
+            or(
+              ilike(users.username, searchPattern),
+              ilike(users.nickname, searchPattern)
+            ),
+            sql`${users.id} != ${currentUserId}`
+          )
         )
-      )
-      .limit(20);
+        .limit(20);
+      
+      console.log(`Search query: "${query}", found ${results.length} users`);
+      if (results.length > 0) {
+        console.log(`Found users:`, results.map(u => ({ id: u.id, username: u.username, nickname: u.nickname })));
+      }
+      return results;
+    } catch (error) {
+      console.error("Error in searchUsers:", error);
+      throw error;
+    }
   }
 
   async updateUserOnlineStatus(userId: string, isOnline: boolean): Promise<void> {

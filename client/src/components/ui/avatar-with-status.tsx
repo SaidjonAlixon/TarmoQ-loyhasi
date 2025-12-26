@@ -33,17 +33,19 @@ export function AvatarWithStatus({ src, name, isOnline = false, size = "md" }: A
   };
 
   return (
-    <div className="relative">
-      <Avatar className={sizeClasses[size]}>
+    <div className="relative flex-shrink-0">
+      <Avatar className={`${sizeClasses[size]} bg-[#5288c1]`}>
         <AvatarImage 
-          src={src || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`} 
+          src={src || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=5288c1&color=fff&bold=true`} 
           alt={name} 
         />
-        <AvatarFallback>{getInitials(name)}</AvatarFallback>
+        <AvatarFallback className="bg-[#5288c1] text-white font-medium">
+          {getInitials(name)}
+        </AvatarFallback>
       </Avatar>
       {isOnline && (
         <span 
-          className={`absolute ${statusSizeClasses[size]} bg-accent rounded-full border-white dark:border-dark-600`}
+          className={`absolute ${statusSizeClasses[size]} bg-[#4ade80] rounded-full border-[#17212b] avatar-status`}
           aria-label="Online"
         ></span>
       )}

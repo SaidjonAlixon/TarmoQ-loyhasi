@@ -4,6 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Login from "@/pages/login";
 import Chat from "@/pages/chat";
+import Profile from "@/pages/profile";
+import Groups from "@/pages/groups";
+import Search from "@/pages/search";
 import AdminDashboard from "@/pages/admin-dashboard";
 import { useAuth } from "@/hooks/useAuth";
 import { MainLayout } from "@/layouts/main-layout";
@@ -37,6 +40,51 @@ function App() {
                 return (
                   <MainLayout>
                     <Chat />
+                  </MainLayout>
+                );
+              } else {
+                navigate("/login");
+                return null;
+              }
+            }}
+          </Route>
+          
+          <Route path="/profile">
+            {() => {
+              if (user) {
+                return (
+                  <MainLayout>
+                    <Profile />
+                  </MainLayout>
+                );
+              } else {
+                navigate("/login");
+                return null;
+              }
+            }}
+          </Route>
+          
+          <Route path="/groups">
+            {() => {
+              if (user) {
+                return (
+                  <MainLayout>
+                    <Groups />
+                  </MainLayout>
+                );
+              } else {
+                navigate("/login");
+                return null;
+              }
+            }}
+          </Route>
+          
+          <Route path="/search">
+            {() => {
+              if (user) {
+                return (
+                  <MainLayout>
+                    <Search />
                   </MainLayout>
                 );
               } else {

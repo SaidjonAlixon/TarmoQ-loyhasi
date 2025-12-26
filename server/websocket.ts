@@ -12,6 +12,12 @@ interface WebSocketMessage {
 // Keep track of connected clients by userId
 const clients: Map<string, WebSocket> = new Map();
 
+// Export function to broadcast message to chat participants
+export function broadcastMessageToChat(chatId: number, message: any, sender: any, excludeUserId?: string) {
+  // This will be called from routes.ts after creating a message via API
+  // We need to get participants from storage, but we'll pass them as parameter
+}
+
 export function setupWebsocket(wss: WebSocketServer, storage: IStorage) {
   wss.on('connection', (ws: WebSocket & { userId?: string }) => {
     console.log('New WebSocket connection established');
@@ -123,11 +129,16 @@ export function setupWebsocket(wss: WebSocketServer, storage: IStorage) {
   });
 }
 
-function sendToUser(userId: string, message: WebSocketMessage) {
+export function sendToUser(userId: string, message: WebSocketMessage) {
   const client = clients.get(userId);
   if (client && client.readyState === WebSocket.OPEN) {
     client.send(JSON.stringify(message));
   }
+}
+
+// Export function to broadcast message to specific user (used from routes.ts)
+export function broadcastMessageToChatParticipants(userId: string, message: WebSocketMessage) {
+  sendToUser(userId, message);
 }
 
 function broadcastToAll(message: WebSocketMessage, excludeUserId?: string) {

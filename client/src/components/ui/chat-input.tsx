@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Smile, PaperclipIcon, Send } from "lucide-react";
+import { Smile, Paperclip, Send } from "lucide-react";
 
 interface ChatInputProps {
   onSend: (message: string) => Promise<boolean>;
@@ -39,11 +39,9 @@ export function ChatInput({ onSend, onTyping }: ChatInputProps) {
     const newValue = e.target.value;
     setMessage(newValue);
     
-    // Handle typing indicator
     if (newValue && !typingTimeoutRef.current) {
       onTyping(true);
       
-      // Clear typing after 3 seconds of inactivity
       typingTimeoutRef.current = setTimeout(() => {
         onTyping(false);
         typingTimeoutRef.current = null;
@@ -53,7 +51,6 @@ export function ChatInput({ onSend, onTyping }: ChatInputProps) {
       typingTimeoutRef.current = null;
       onTyping(false);
     } else if (typingTimeoutRef.current) {
-      // Reset the timeout on each keystroke
       clearTimeout(typingTimeoutRef.current);
       typingTimeoutRef.current = setTimeout(() => {
         onTyping(false);
@@ -62,7 +59,6 @@ export function ChatInput({ onSend, onTyping }: ChatInputProps) {
     }
   };
 
-  // Clean up timeout on unmount
   useEffect(() => {
     return () => {
       if (typingTimeoutRef.current) {
@@ -73,44 +69,42 @@ export function ChatInput({ onSend, onTyping }: ChatInputProps) {
   }, [onTyping]);
 
   return (
-    <div className="p-4 bg-white dark:bg-dark-700 border-t border-light-500 dark:border-dark-600">
-      <div className="flex items-center gap-2">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-10 w-10 rounded-full hover:bg-light-300 dark:hover:bg-dark-600"
-          aria-label="Emoji kiritish"
-        >
-          <Smile className="h-5 w-5 text-dark-500 dark:text-light-400" />
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-10 w-10 rounded-full hover:bg-light-300 dark:hover:bg-dark-600"
-          aria-label="Fayl biriktirish"
-        >
-          <PaperclipIcon className="h-5 w-5 text-dark-500 dark:text-light-400" />
-        </Button>
-        <div className="flex-1 relative">
-          <Input
-            type="text"
-            placeholder="Xabar yozing..."
-            className="w-full bg-light-300 dark:bg-dark-600 rounded-full py-2.5 px-4 text-dark-700 dark:text-light-300 focus:outline-none focus:ring-2 focus:ring-primary"
-            value={message}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            ref={inputRef}
-          />
-        </div>
-        <Button 
-          className="h-10 w-10 flex items-center justify-center bg-primary rounded-full text-white"
-          disabled={!message.trim() || isSending}
-          onClick={handleSend}
-          aria-label="Xabar yuborish"
-        >
-          <Send className="h-5 w-5" />
-        </Button>
+    <div className="h-16 bg-[#17212b] border-t border-[#242f3d] flex items-center gap-2 px-4 flex-shrink-0">
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className="h-9 w-9 rounded-full hover:bg-[#242f3d] text-[#6e7a8a] flex-shrink-0"
+        aria-label="Emoji kiritish"
+      >
+        <Smile className="h-5 w-5" />
+      </Button>
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className="h-9 w-9 rounded-full hover:bg-[#242f3d] text-[#6e7a8a] flex-shrink-0"
+        aria-label="Fayl biriktirish"
+      >
+        <Paperclip className="h-5 w-5" />
+      </Button>
+      <div className="flex-1 relative">
+        <Input
+          type="text"
+          placeholder="Xabar yozing..."
+          className="w-full bg-[#242f3d] border-0 rounded-full py-2.5 px-4 text-white placeholder:text-[#6e7a8a] focus:ring-1 focus:ring-[#5288c1] focus:outline-none"
+          value={message}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          ref={inputRef}
+        />
       </div>
+      <Button 
+        className="h-9 w-9 flex items-center justify-center bg-[#5288c1] hover:bg-[#4a7ab8] rounded-full text-white flex-shrink-0 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={!message.trim() || isSending}
+        onClick={handleSend}
+        aria-label="Xabar yuborish"
+      >
+        <Send className="h-4 w-4" />
+      </Button>
     </div>
   );
 }

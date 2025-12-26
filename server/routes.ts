@@ -56,6 +56,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { username, password, nickname } = req.body;
       
+      if (!username || !password) {
+        return res.status(400).json({ message: "Foydalanuvchi nomi va parol talab qilinadi" });
+      }
+      
       // Check if user exists
       const existingUser = await storage.getUserByUsername(username);
       if (existingUser) {
@@ -67,31 +71,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create user (in real app, password should be hashed)
       const user = await storage.createUser({
-        id: `manual_${Date.now()}`,
-        username,
-        nickname,
+        id: `manual_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        username: username.trim(),
+        nickname: nickname?.trim() || username.trim(),
         isAdmin,
         password, // In real app, this would be hashed
       });
       
+      console.log("New user created:", { id: user.id, username: user.username, nickname: user.nickname });
+      
       res.status(201).json({ message: "Foydalanuvchi muvaffaqiyatli yaratildi", user });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating user:", error);
-      res.status(500).json({ message: "Foydalanuvchi yaratishda xatolik yuz berdi" });
+      console.error("Error stack:", error.stack);
+      res.status(500).json({ 
+        message: "Foydalanuvchi yaratishda xatolik yuz berdi",
+        error: process.env.NODE_ENV === "development" ? error.message : undefined
+      });
     }
   });
   
   app.post('/api/users/login', async (req, res) => {
     try {
       const { username, password } = req.body;
+      console.log("Login attempt:", { username, hasPassword: !!password });
       
       // Special case for admin
       if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        console.log("Admin login attempt");
         // Check if admin already exists
         let adminUser = await storage.getUserByUsername(username);
+        console.log("Admin user found:", !!adminUser);
         
         // If admin doesn't exist yet, create admin account
         if (!adminUser) {
+          console.log("Creating admin user");
           adminUser = await storage.createUser({
             id: `admin_${Date.now()}`,
             username: ADMIN_USERNAME,
@@ -99,13 +113,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
             password: ADMIN_PASSWORD,
             isAdmin: true
           });
+          console.log("Admin user created:", adminUser.id);
         } else if (!adminUser.isAdmin) {
           // Update user to admin if account exists but is not admin
+          console.log("Updating user to admin");
           adminUser.isAdmin = true;
-          await storage.upsertUser(adminUser);
+          adminUser = await storage.upsertUser(adminUser);
         }
         
         // Create session for admin
+        console.log("Creating session for admin");
         if (req.session) {
           const userSession = {
             claims: {
@@ -115,6 +132,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
           };
           (req.session as any).passport = { user: userSession };
+          console.log("Session created, saving...");
+          await new Promise<void>((resolve, reject) => {
+            req.session!.save((err) => {
+              if (err) {
+                console.error("Session save error:", err);
+                reject(err);
+              } else {
+                console.log("Session saved successfully");
+                resolve();
+              }
+            });
+          });
         }
         
         return res.json({ message: "Admin muvaffaqiyatli login", user: adminUser });
@@ -141,44 +170,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         };
         (req.session as any).passport = { user: userSession };
+        await new Promise<void>((resolve, reject) => {
+          req.session!.save((err) => {
+            if (err) reject(err);
+            else resolve();
+          });
+        });
       }
       
       res.json({ message: "Muvaffaqiyatli login", user });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error logging in:", error);
-      res.status(500).json({ message: "Login qilishda xatolik yuz berdi" });
+      console.error("Error stack:", error.stack);
+      res.status(500).json({ 
+        message: "Login qilishda xatolik yuz berdi",
+        error: process.env.NODE_ENV === "development" ? error.message : undefined
+      });
     }
   });
 
   // User routes
   app.get('/api/users/search', async (req: any, res) => {
     try {
-      if (!req.isAuthenticated()) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      
-      const query = req.query.q as string;
-      if (!query || query.length < 2) {
-        return res.json([]);
-      }
-      
-      // Get user ID from session (works with both auth methods)
+      // Check authentication - support both methods
+      const session = req.session as any;
       let userId;
-      if (req.user.claims?.sub) {
+      
+      if (req.isAuthenticated() && req.user?.claims?.sub) {
         userId = req.user.claims.sub;
-      } else if (req.session?.passport?.user?.claims?.sub) {
-        userId = req.session.passport.user.claims.sub;
+      } else if (session?.passport?.user?.claims?.sub) {
+        userId = session.passport.user.claims.sub;
       } else {
         return res.status(401).json({ message: "Unauthorized" });
       }
       
+      const query = (req.query.q as string)?.trim();
+      if (!query || query.length < 2) {
+        return res.json([]);
+      }
+      
       console.log("Searching users with query:", query, "for user:", userId);
-      const users = await storage.searchUsers(query, userId);
-      console.log("Search results:", users.length, "users found");
-      res.json(users);
-    } catch (error) {
+      const foundUsers = await storage.searchUsers(query, userId);
+      console.log("Search results:", foundUsers.length, "users found");
+      
+      // Log found users for debugging
+      if (foundUsers.length > 0) {
+        console.log("Found users:", foundUsers.map((u: any) => ({ 
+          id: u.id, 
+          username: u.username, 
+          nickname: u.nickname 
+        })));
+      }
+      
+      res.json(foundUsers);
+    } catch (error: any) {
       console.error("Error searching users:", error);
-      res.status(500).json({ message: "Foydalanuvchilarni qidirishda xatolik" });
+      console.error("Error stack:", error.stack);
+      res.status(500).json({ 
+        message: "Foydalanuvchilarni qidirishda xatolik",
+        error: process.env.NODE_ENV === "development" ? error.message : undefined
+      });
+    }
+  });
+
+  // Get all users (for testing/search purposes)
+  app.get('/api/users/all', async (req: any, res) => {
+    try {
+      const session = req.session as any;
+      let userId;
+      
+      if (req.isAuthenticated() && req.user?.claims?.sub) {
+        userId = req.user.claims.sub;
+      } else if (session?.passport?.user?.claims?.sub) {
+        userId = session.passport.user.claims.sub;
+      } else {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const allUsers = await storage.getAllUsers();
+      // Filter out current user
+      const otherUsers = allUsers.filter((u: any) => u.id !== userId);
+      res.json(otherUsers);
+    } catch (error: any) {
+      console.error("Error fetching all users:", error);
+      res.status(500).json({ 
+        message: "Foydalanuvchilarni olishda xatolik",
+        error: process.env.NODE_ENV === "development" ? error.message : undefined
+      });
     }
   });
 
@@ -297,8 +375,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get sender info
       const sender = await storage.getUser(userId);
       
-      // Send via websocket to all participants
+      if (!sender) {
+        return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
+      }
+      
+      // Broadcast via websocket to all participants (except sender)
+      // Import WebSocket clients from websocket module
+      const { broadcastMessageToChatParticipants } = await import('./websocket');
       const participants = await storage.getChatParticipants(chatId);
+      
+      // Broadcast to all participants except the sender
+      for (const participant of participants) {
+        if (participant.id !== userId) {
+          broadcastMessageToChatParticipants(participant.id, {
+            type: 'message',
+            payload: {
+              ...message,
+              sender
+            }
+          });
+        }
+      }
       
       res.status(201).json({
         ...message,
