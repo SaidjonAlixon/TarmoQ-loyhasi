@@ -830,7 +830,7 @@ export default function Chat() {
                 </Button>
               </div>
               <Input
-                placeholder="Taxallus yoki ism bo'yicha qidirish"
+                placeholder="Ism bo'yicha qidirish"
                 value={searchUserQuery}
                 onChange={(e) => setSearchUserQuery(e.target.value)}
                 className="w-full bg-[#17212b] border-0 text-white placeholder:text-[#6e7a8a]"

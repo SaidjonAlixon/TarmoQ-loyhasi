@@ -98,7 +98,11 @@ function App() {
           <Route path="/settings">
             {() => {
               if (user) {
-                return <Settings />;
+                return (
+                  <MainLayout>
+                    <Settings />
+                  </MainLayout>
+                );
               } else {
                 navigate("/login");
                 return null;

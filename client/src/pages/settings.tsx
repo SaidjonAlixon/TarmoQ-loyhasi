@@ -15,11 +15,7 @@ import {
   Palette,
   Check
 } from "lucide-react";
-import { useLocation } from "wouter";
-import { SidebarNavigation } from "@/components/ui/sidebar-navigation";
-
 export default function SettingsPage() {
-  const [, navigate] = useLocation();
   const [activeSection, setActiveSection] = useState('settings');
   
   // Settings state
@@ -35,13 +31,12 @@ export default function SettingsPage() {
   };
 
   const sidebarItems = [
-    { id: 'settings', icon: Settings, label: 'Sozlamalar' },
     { id: 'account', icon: User, label: 'Hisob' },
     { id: 'privacy', icon: Lock, label: 'Maxfiylik' },
     { id: 'security', icon: Shield, label: 'Xavfsizlik' },
     { id: 'data', icon: Cloud, label: 'Ma\'lumotlar saqlash' },
     { id: 'language', icon: Globe, label: 'Til: O\'zbekcha' },
-    { id: 'logout', icon: LogOut, label: 'Chiquish' },
+    { id: 'settings', icon: Settings, label: 'Sozlamalar' },
   ];
 
   const colors = [
@@ -51,12 +46,10 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="h-screen flex bg-[#0e1621]">
-      <SidebarNavigation />
-      <div className="flex-1 bg-[#0e1621] text-white flex overflow-hidden">
+    <div className="h-full bg-[#0e1621] text-white flex overflow-hidden">
         {/* Settings Left Sidebar */}
         <div className="w-64 bg-[#17212b] border-r border-[#242f3d] flex flex-col flex-shrink-0">
-        <div className="flex-1 py-4">
+        <div className="flex-1 py-4 overflow-y-auto">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
@@ -71,11 +64,7 @@ export default function SettingsPage() {
                       : 'hover:bg-[#242f3d] text-white hover:text-white'
                   }`}
                   onClick={() => {
-                    if (item.id === 'logout') {
-                      handleLogout();
-                    } else {
-                      setActiveSection(item.id);
-                    }
+                    setActiveSection(item.id);
                   }}
                 >
                   <Icon className="h-5 w-5 flex-shrink-0" />
@@ -88,6 +77,18 @@ export default function SettingsPage() {
               </div>
             );
           })}
+        </div>
+        
+        {/* Bottom section - Logout */}
+        <div className="mt-auto border-t border-[#242f3d] p-4">
+          <Button
+            variant="ghost"
+            className="w-full flex items-center gap-3 px-4 py-3 justify-start rounded-lg hover:bg-[#242f3d] text-[#6e7a8a] hover:text-white transition-all"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-5 w-5 flex-shrink-0" />
+            <span className="text-sm font-medium">Chiquish</span>
+          </Button>
         </div>
       </div>
 
@@ -219,7 +220,6 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
-      </div>
       </div>
     </div>
   );

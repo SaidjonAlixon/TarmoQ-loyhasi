@@ -152,7 +152,7 @@ export function sendToUser(userId: string, message: WebSocketMessage) {
   const client = clients.get(userId);
   if (client && client.readyState === WebSocket.OPEN) {
     try {
-      client.send(JSON.stringify(message));
+    client.send(JSON.stringify(message));
       console.log(`Message sent to user ${userId}:`, message.type);
     } catch (error) {
       console.error(`Error sending message to user ${userId}:`, error);
